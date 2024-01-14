@@ -4,6 +4,8 @@ package com.example.demo.controller;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,12 +29,14 @@ public class AssetController {
 	@Autowired
 	Assetrepo arepo;
 	
+	@CacheEvict(value="asset", allEntries=true)
 	@PostMapping("/asset")
     public String addAsset(@RequestBody Assets asset) {
         arepo.save(asset);
     	return asset.toString()+"  Added Successfully";
     }
     
+	@Cacheable("asset")
     @GetMapping("/asset/{assetID}")
     public Optional<Assets> viewAsset(@PathVariable("assetID") String id) {
         Optional<Assets> asset = arepo.findById(id);
@@ -43,6 +47,7 @@ public class AssetController {
         }
     }
     
+	@Cacheable("asset")
     @GetMapping("/asset")
     public Page<Assets> viewAllAsset(@RequestParam(defaultValue="0")int pageNo,
 									 @RequestParam(defaultValue="10")int pageSize){
@@ -55,6 +60,7 @@ public class AssetController {
         }
     }
     
+	@Cacheable("asset")
     @GetMapping("/asset/name/{name}")
     public Page<Assets> findAssetByName(@PathVariable("name") String name,
     									@RequestParam(defaultValue="0")int pageNo,
@@ -68,13 +74,14 @@ public class AssetController {
     	}
     }
     
-    
+	@CacheEvict(value="asset", allEntries=true)
     @PutMapping("/asset")
     public String updateAsset(@RequestBody Assets asset) {
         arepo.save(asset);
     	return asset.toString()+" Updated Successfully";
     }
     
+	@CacheEvict(value="asset", allEntries=true)
     @PutMapping("/asset/status/{assetID}")
     public String updateAssetStatus(@PathVariable("assetID") String id) {
     	Optional<Assets> asset = arepo.findById(id);
@@ -87,6 +94,7 @@ public class AssetController {
     	}
     }
     
+	@CacheEvict(value="asset", allEntries=true)
     @DeleteMapping("/asset/{assetID}")
     public String deleteAssetfun(@PathVariable("assetID") String id) {
         Optional<Assets> asset = arepo.findById(id);

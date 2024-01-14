@@ -4,6 +4,8 @@ package com.example.demo.controller;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +30,7 @@ public class AssetAssignmentController {
 	@Autowired
 	Assetrepo assetrepo;
 	
+	@CacheEvict(value="assign", allEntries=true)
 	@PostMapping("/assign/{assetID}/{EmployeeID}")
     public String addAsset(@PathVariable("assetID") String assetID,@PathVariable("EmployeeID")int empID) {
         Optional<Assets> asset = assetrepo.findById(assetID.toLowerCase());
@@ -49,6 +52,7 @@ public class AssetAssignmentController {
     	return "Asset Assigned to Employee"+empID;
     }
 	
+	@Cacheable("assign")
 	@GetMapping("/assign")
 	public Page<AssignedStatus> getAll(@RequestParam(defaultValue="0")int pageNo, 
 										@RequestParam(defaultValue="10")int pageSize){
